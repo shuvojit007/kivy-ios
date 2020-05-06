@@ -77,11 +77,14 @@ int main(int argc, char *argv[]) {
     PySys_SetArgv(argc, python_argv);
 #endif
 
+    
     // If other modules are using the thread, we need to initialize them before.
     PyEval_InitThreads();
+    
 
     // Add an importer for builtin modules
     load_custom_builtin_importer();
+    
 
     // Search and start main.py
 #if PY_MAJOR_VERSION == 2
@@ -99,6 +102,13 @@ int main(int argc, char *argv[]) {
         ret = 1;
         NSLog(@"Unable to open main.py, abort.");
     } else {
+        PyRun_SimpleString("import numpy as np\n"\
+        "arr = np.array( [[ 1, 2, 3],[ 4, 2, 5]] )\n"\
+        "print(\"Shafayet boss \")\n"\
+        "for val in range(10):\n"\
+        "   print(val)\n"\
+        "print(\"No. of dimensions: \", arr.ndim)  ");
+        
         ret = PyRun_SimpleFileEx(fd, prog, 1);
         if (ret != 0)
             NSLog(@"Application quit abnormally!");
@@ -201,6 +211,10 @@ void load_custom_builtin_importer() {
         "            sys.modules[fullname] = mod\n" \
         "            return mod\n" \
         "        return mod\n" \
-        "sys.meta_path.insert(0, CustomBuiltinImporter())";
+    "sys.meta_path.insert(0, CustomBuiltinImporter())";
+        
     PyRun_SimpleString(custom_builtin_importer);
+    
+    
+    
 }
